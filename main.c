@@ -1,5 +1,5 @@
 #include <arpa/inet.h>
-#include <unistd.h>
+#include <unistd.h> // NULL
 
 #include <weld_socket.h>
 

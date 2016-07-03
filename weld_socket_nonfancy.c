@@ -1,33 +1,9 @@
-#define _GNU_SOURCE
-
 #include <pthread.h>
-#include <arpa/inet.h>
-#include <limits.h> // SSIZE_MAX
-#include <unistd.h> // close, pipe, NULL
-#include <fcntl.h> // splice
+#include <unistd.h> // NULL
+
+#include <splice_all.h>
 
 #define len(arr) (sizeof(arr)/sizeof(arr[0]))
-
-void * splice_all(void * fds)
-{
-	int from = ((int *) fds)[0];
-	int to   = ((int *) fds)[1];
-
-	for (;;) {
-		uint8_t buf[8*1024];
-		ssize_t received = recv(from, buf, sizeof(buf), 0);
-
-		if (received == 0) {
-			close(to);
-			return NULL;
-		}
-
-		ssize_t sent = 0;
-		while (sent < received) {
-			sent += send(to, (buf + sent), (received - sent), 0);
-		}
-	}
-}
 
 void weld_sockets(int sock_a, int sock_b)
 {
