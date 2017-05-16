@@ -1,8 +1,9 @@
 #define _GNU_SOURCE // splice
 
+#include <errno.h>
+#include <fcntl.h> // splice
 #include <limits.h> // SSIZE_MAX
 #include <unistd.h> // close, NULL
-#include <fcntl.h> // splice
 
 void * splice_all(void * fds)
 {
@@ -21,8 +22,10 @@ void * splice_all(void * fds)
 
 	for (;;) {
 		ssize_t transferred = splice(from, NULL, to, NULL, SSIZE_MAX, 0);
-		if (transferred == 0) {
-			close(to);
+		if (transferred <= 0) { // If closed or error
+			do {
+				int e = close(to);
+			} while (e && errno == EINTR);
 			return NULL;
 		}
 	}

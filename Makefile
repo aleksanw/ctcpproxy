@@ -1,4 +1,4 @@
-CFLAGS += -I. -flto -pthread
+CFLAGS += -I. -flto -pthread -g
 
 all: ctcpproxy-nonfancy ctcpproxy-pipes ctcpproxy-splice
 

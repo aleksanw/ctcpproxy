@@ -8,16 +8,23 @@ void * splice_all(void * fds)
 
 	for (;;) {
 		uint8_t buf[8*1024];
-		ssize_t received = read(from, buf, sizeof(buf));
+		do {
+			ssize_t received = read(from, buf, sizeof(buf));
+		while (received == EINTR);
 
-		if (received == 0) {
-			close(to);
+		if (received <= 0) { // If closed or error
+			do {
+				int e = close(to);
+			} while (e && errno == EINTR);
 			return NULL;
 		}
 
-		ssize_t sent = 0;
+		ssize_t sent_total = 0;
 		while (sent < received) {
-			sent += write(to, (buf + sent), (received - sent));
+			do {
+				int sent = write(to, (buf + sent), (received - sent));
+			} while (sent == EINTR);
+			sent_total += sent;
 		}
 	}
 }
