@@ -55,6 +55,7 @@ int tcp_setup(enum setup_action action, char * addr, char * port)
 
 	struct addrinfo * item;
 	for(item = addrinfo; item != NULL; item = item->ai_next) {
+
 		fd = addr_socket(item);
 
 		if (fd < 0) {
